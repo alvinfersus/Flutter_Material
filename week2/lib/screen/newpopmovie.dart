@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class NewPopMovie extends StatefulWidget {
   const NewPopMovie({super.key});
@@ -10,6 +13,11 @@ class NewPopMovie extends StatefulWidget {
 class _NewPopMovieState extends State<NewPopMovie> {
   final _formKey = GlobalKey<FormState>();
   String _title = "";
+  String _homepage = "";
+  String _overview = "";
+  final _controllerDate = TextEditingController();
+  int _runtime = 100;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +45,81 @@ class _NewPopMovieState extends State<NewPopMovie> {
                     },
                   )),
               Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Homepage',
+                    ),
+                    onChanged: (value) {
+                      _homepage = value;
+                    },
+                    validator: (value) {
+                      if (value == null || !Uri.parse(value).isAbsolute) {
+                        return 'alamat homepage salah';
+                      }
+                      return null;
+                    },
+                  )),
+              Padding(
+                  padding: EdgeInsets.all(10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: 'Overview',
+                    ),
+                    onChanged: (value) {
+                      _overview = value;
+                    },
+                    keyboardType: TextInputType.multiline,
+                    minLines: 3,
+                    maxLines: 6,
+                  )),
+              Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Expanded(
+                          child: TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Release Date',
+                        ),
+                        controller: _controllerDate,
+                      )),
+                      ElevatedButton(
+                          onPressed: () {
+                            showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2200))
+                                .then((value) {
+                              setState(() {
+                                _controllerDate.text =
+                                    value.toString().substring(0, 10);
+                              });
+                            });
+                          },
+                          child: Icon(
+                            Icons.calendar_today_sharp,
+                            color: Colors.white,
+                            size: 24.0,
+                          ))
+                    ],
+                  )),
+              NumberPicker(
+                value: _runtime,
+                axis: Axis.horizontal,
+                minValue: 50,
+                maxValue: 300,
+                itemHeight: 30,
+                itemWidth: 60,
+                step: 1,
+                onChanged: (value) => setState(() => _runtime = value),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black26),
+                ),
+              ),
+              Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: ElevatedButton(
                   onPressed: () {
@@ -44,6 +127,8 @@ class _NewPopMovieState extends State<NewPopMovie> {
                         !_formKey.currentState!.validate()) {
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Harap Isian diperbaiki')));
+                    } else {
+                      submit();
                     }
                   },
                   child: Text('Submit'),
@@ -52,5 +137,28 @@ class _NewPopMovieState extends State<NewPopMovie> {
             ],
           ),
         ));
+  }
+
+  void submit() async {
+    final response = await http
+        .post(Uri.parse("https://ubaya.me/flutter/160420013/newmovie.php"), body: {
+      'title': _title,
+      'overview': _overview,
+      'homepage': _homepage,
+      'release_date': _controllerDate.text,
+      'runtime': _runtime.toString(),
+    });
+    if (response.statusCode == 200) {
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Sukses Menambah Data')));
+      }
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error')));
+      throw Exception('Failed to read API');
+    }
   }
 }

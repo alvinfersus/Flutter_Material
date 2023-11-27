@@ -6,6 +6,7 @@ import 'package:week2/screen/basket.dart';
 import 'package:week2/screen/home.dart';
 import 'package:week2/screen/login.dart';
 import 'package:week2/screen/my_course.dart';
+import 'package:week2/screen/newpopmovie.dart';
 import 'package:week2/screen/search.dart';
 import 'package:week2/screen/history.dart';
 import 'package:week2/screen/studentList.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         'animasi': (context) => Animasi(),
         'popularMovie': (context) => PopularMovie(),
         'popularActor': (context) => PopularActor(),
+        'newPopMovie': (context) => NewPopMovie(),
       },
     );
   }
@@ -170,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Drawer myDrawer() {
     return Drawer(
       elevation: 16.0,
-      child: Column(
+      child: ListView(
         children: <Widget>[
           UserAccountsDrawerHeader(
               accountName: Text("xyz"),
@@ -249,6 +251,12 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: new Icon(Icons.animation),
               onTap: () {
                 Navigator.popAndPushNamed(context, "popularActor");
+              }),
+          ListTile(
+              title: new Text("New Movie"),
+              leading: new Icon(Icons.animation),
+              onTap: () {
+                Navigator.popAndPushNamed(context, "newPopMovie");
               }),
           ListTile(
               title: Text("Logout"),
