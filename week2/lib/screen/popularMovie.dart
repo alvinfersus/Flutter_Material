@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:week2/screen/detailpop.dart';
 import '../class/popMovie.dart';
 import 'dart:convert';
 
@@ -90,7 +91,17 @@ class _PopularMovieState extends State<PopularMovie> {
               children: <Widget>[
                 ListTile(
                   leading: Icon(Icons.movie, size: 30),
-                  title: Text(PopMovs[index].title),
+                  title: GestureDetector(
+                      child: Text(PMs[index].title),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetailPop(movieID: PMs[index].id),
+                          ),
+                        );
+                      }),
                   subtitle: Text(PopMovs[index].overview),
                 ),
               ],
@@ -117,7 +128,17 @@ class _PopularMovieState extends State<PopularMovie> {
             children: <Widget>[
               ListTile(
                 leading: Icon(Icons.movie, size: 30),
-                title: Text(PMs2[index].title),
+                title: GestureDetector(
+                      child: Text(PMs2[index].title),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                DetailPop(movieID: PMs2[index].id),
+                          ),
+                        );
+                      }),
                 subtitle: Text(PMs2[index].overview),
               ),
             ],
