@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:week2/class/popMovie.dart';
+import 'package:week2/screen/editpopmovie.dart';
 
 class DetailPop extends StatefulWidget {
   int movieID;
@@ -76,6 +77,20 @@ class _DetailPopState extends State<DetailPop> {
               },
             ),
           ),
+          Padding(
+              padding: EdgeInsets.all(10),
+              child: ElevatedButton(
+                child: Text('Edit'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditPopMovie(movieID: widget.movieID),
+                    ),
+                  );
+                },
+              )),
         ]));
   }
 
