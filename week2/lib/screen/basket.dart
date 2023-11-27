@@ -37,15 +37,11 @@ class Basket extends StatelessWidget {
                   recipes[i].name,
                   style: Theme.of(context).textTheme.headline5,
                 )),
-            Container(
-              margin: EdgeInsets.all(20),
-              child: Text(recipes[i].category),
-            ),
             Image.network(recipes[i].photo),
             Container(
               margin: EdgeInsets.all(20),
               child: Text(recipes[i].desc),
-            ),
+            )
           ])));
       temp.add(w);
       i++;

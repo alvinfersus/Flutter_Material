@@ -12,7 +12,6 @@ class _AddRecipeState extends State<AddRecipe> {
   final TextEditingController _recipe_name_cont = TextEditingController();
   final TextEditingController _recipe_desc_cont = TextEditingController();
   final TextEditingController _recipe_photo_cont = TextEditingController();
-  final TextEditingController _recipe_category_cont = TextEditingController();
   int _charleft = 0;
 
   @override
@@ -20,7 +19,6 @@ class _AddRecipeState extends State<AddRecipe> {
     super.initState();
     _recipe_name_cont.text = "your food name";
     _recipe_desc_cont.text = "Recipe of ..";
-    _recipe_category_cont.text = "Category ...";
     _charleft = 200 - _recipe_desc_cont.text.length;
   }
 
@@ -68,13 +66,6 @@ class _AddRecipeState extends State<AddRecipe> {
                     setState(() {});
                   },
                 ),
-                TextField(
-                  controller: _recipe_category_cont,
-                  onChanged: (v) {
-                    setState(() {});
-                  },
-                ),
-                Text(""),
                 Image.network(_recipe_photo_cont.text),
                 Text(""),
                 ElevatedButton(
@@ -89,7 +80,6 @@ class _AddRecipeState extends State<AddRecipe> {
                         name: _recipe_name_cont.text,
                         desc: _recipe_desc_cont.text,
                         photo: _recipe_photo_cont.text,
-                        category: _recipe_category_cont.text,
                       ));
 
                       showDialog<String>(
