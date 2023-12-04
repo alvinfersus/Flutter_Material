@@ -17,6 +17,16 @@ class EditPopMovie extends StatefulWidget {
 }
 
 class EditPopMovieState extends State<EditPopMovie> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    bacaData();
+    setState(() {
+      generateComboGenre();
+    });
+  }
+
   final _formKey = GlobalKey<FormState>();
   late PopMovie pm;
   TextEditingController _titleCont = TextEditingController();
@@ -73,7 +83,8 @@ class EditPopMovieState extends State<EditPopMovie> {
             );
           }).toList(),
           onChanged: (value) {
-            //memnaggil fungsi menambah genre disini
+            //memanggil fungsi menambah genre disini
+            addGenre(value);
           });
     });
   }
@@ -105,7 +116,7 @@ class EditPopMovieState extends State<EditPopMovie> {
   Future<List> daftarGenre() async {
     Map json;
     final response = await http.post(
-        Uri.parse("https://ubaya.fun/flutter/daniel/genrelist.php"),
+        Uri.parse("https://ubaya.me/flutter/160420013/genre_list.php"),
         body: {'movie_id': widget.movieID.toString()});
 
     if (response.statusCode == 200) {
@@ -117,11 +128,26 @@ class EditPopMovieState extends State<EditPopMovie> {
     }
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    bacaData();
+  void addGenre(genre_id) async {
+    final response = await http.post(
+        Uri.parse("https://ubaya.me/flutter/160420013/addmoviegenre.php"),
+        body: {
+          'genre_id': genre_id.toString(),
+          'movie_id': widget.movieID.toString()
+        });
+    if (response.statusCode == 200) {
+      print(response.body);
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Sukses menambah genre')));
+        setState(() {
+          bacaData();
+        });
+      }
+    } else {
+      throw Exception('Failed to read API');
+    }
   }
 
   @override
@@ -255,6 +281,9 @@ class EditPopMovieState extends State<EditPopMovie> {
                       itemBuilder: (BuildContext ctxt, int index) {
                         return new Text(pm?.genres?[index]['genre_name']);
                       })),
+              Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: comboGenre),
             ],
           ),
         ));
