@@ -35,6 +35,7 @@ class EditPopMovieState extends State<EditPopMovie> {
   TextEditingController _releaseDate = TextEditingController();
   int _runtime = 100;
   late Widget comboGenre;
+  late var dataGenre;
 
   Future<String> fetchData() async {
     final response = await http.post(
@@ -70,6 +71,8 @@ class EditPopMovieState extends State<EditPopMovie> {
         return Genre.fromJSON(i);
       }));
 
+      dataGenre = genres;
+
       comboGenre = DropdownButton(
           dropdownColor: Colors.grey[100],
           hint: Text("tambah genre"),
@@ -87,6 +90,30 @@ class EditPopMovieState extends State<EditPopMovie> {
             addGenre(value);
           });
     });
+  }
+
+  void hapusMovie(genre_id) async {
+    print(genre_id);
+    final response = await http.post(
+        Uri.parse("https://ubaya.me/flutter/160420013/hapus_movie_genre.php"),
+        body: {
+          'genre_id': genre_id.toString(),
+          'movie_id': widget.movieID.toString()
+        });
+    if (response.statusCode == 200) {
+      print(response.body);
+      Map json = jsonDecode(response.body);
+      if (json['result'] == 'success') {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Sukses menghapus Genre')));
+        setState(() {
+          bacaData();
+        });
+      }
+    } else {
+      throw Exception('Failed to read API');
+    }
   }
 
   void submit() async {
@@ -279,7 +306,19 @@ class EditPopMovieState extends State<EditPopMovie> {
                       shrinkWrap: true,
                       itemCount: pm.genres?.length ?? 0,
                       itemBuilder: (BuildContext ctxt, int index) {
-                        return new Text(pm?.genres?[index]['genre_name']);
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                                child: Text(pm?.genres?[index]['genre_name'])),
+                            ElevatedButton(
+                              onPressed: () {
+                                hapusMovie(pm?.genres?[index]['genre_id']);
+                              },
+                              child: Text('X'),
+                            )
+                          ],
+                        );
                       })),
               Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
